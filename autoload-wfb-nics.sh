@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Define the vendor MAC address prefixes to filter
-VENDOR_PREFIXES=(
-  "50:2b:73" # Tenda U12
-  "c8:fe:0f" # BL-R8812-AF1
-)
+# Define the MAC address prefix to exclude (Internal Wifi adapter)
+EXCLUDE_PREFIX="98:03:cf"
 
 # Initialize log file variable
 LOG_FILE=""
@@ -18,14 +15,12 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-# Function to check if an interface's MAC address matches the vendor prefixes
-matches_vendor_prefix() {
+# Function to check if an interface's MAC address matches the exclude prefix
+matches_exclude_prefix() {
     local mac_address=$1
-    for prefix in "${VENDOR_PREFIXES[@]}"; do
-        if [[ $mac_address == $prefix* ]]; then
-            return 0  # Match found
-        fi
-    done
+    if [[ $mac_address == $EXCLUDE_PREFIX* ]]; then
+        return 0  # Match found
+    fi
     return 1  # No match
 }
 
@@ -39,8 +34,8 @@ for iface in /sys/class/net/*; do
     if [ -d "/sys/class/net/$iface_name/wireless" ]; then
         # Get the MAC address of the interface
         mac_address=$(cat /sys/class/net/$iface_name/address)
-        # Check if the MAC address matches any of the vendor prefixes
-        if matches_vendor_prefix $mac_address; then
+        # Check if the MAC address does not match the exclude prefix
+        if ! matches_exclude_prefix $mac_address; then
             # Append the interface name to the list
             matching_interfaces+="$iface_name "
         fi
