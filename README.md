@@ -1,4 +1,4 @@
-# Hot Plug Wifi Adapters for Radxa GroundStation (PixelPilot rk)
+# Hot Plug Wifi Adapters for OpenIPC Radxa GroundStation (PixelPilot_rk)
 
 ## Description
 Configure the `autoload-wfb-nics.sh` script in your Radxa GroundStation to enable the support for hot plugging Wifi Adapters.
