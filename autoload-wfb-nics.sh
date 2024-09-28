@@ -31,8 +31,6 @@ for iface in /sys/class/net/*; do
     iface_name=$(basename $iface)
     # Check if the interface is wireless and usb
     if [ -d "/sys/class/net/$iface_name/wireless" ] && [[ "$(readlink -f /sys/class/net/$iface_name/device/subsystem)" == *"usb"* ]]; then
-        # Get the MAC address of the interface
-        mac_address=$(cat /sys/class/net/$iface_name/address)
         # Append the interface name to the list
         matching_interfaces+="$iface_name "
     fi
