@@ -29,10 +29,21 @@ matching_interfaces=""
 # List all network interfaces and filter only wireless ones
 for iface in /sys/class/net/*; do
     iface_name=$(basename $iface)
-    # Check if the interface is wireless and usb
-    if [ -d "/sys/class/net/$iface_name/wireless" ] && [[ "$(readlink -f /sys/class/net/$iface_name/device/subsystem)" == *"usb"* ]]; then
-        # Append the interface name to the list
-        matching_interfaces+="$iface_name "
+    # Check if the interface is wireless
+    if [ -d "/sys/class/net/$iface_name/wireless" ]; then
+        # Check if the interface is usb
+        if [[ "$(readlink -f /sys/class/net/$iface_name/device/subsystem)" == *"usb"* ]]; then
+            # Append the interface name to the list
+            matching_interfaces+="$iface_name "
+        else
+            # Check if the interface name is not wlan0
+            if [[ "$iface_name" != "wlan0" ]]; then
+                # Rename the interface to wlan0
+                ip link set "$iface_name" down
+                ip link set "$iface_name" name wlan0
+                ip link set wlan0 up
+            fi
+        fi
     fi
 done
 
